@@ -7,7 +7,7 @@
     <ProjectGuid>{F7D8B99D-9EA5-4038-8834-19729078A8E2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ModelMapper</RootNamespace>
+    <RootNamespace>ModelMapping</RootNamespace>
     <AssemblyName>ModelMapper</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
