@@ -52,7 +52,7 @@ namespace ModelMapping
                     object toObj = TryInitializeInstance(toInfo);
                     if (toObj != null)
                     {
-                        to.GetType().GetProperty(toName).SetValue(to, toObj);
+                        toInfo.SetValue(to, toObj);
                         this.Map(fromObj, toObj);
                         continue;
                     }
