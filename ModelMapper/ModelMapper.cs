@@ -36,9 +36,11 @@ namespace ModelMapping
             }
             foreach (var fromInfo in from.GetType().GetProperties())
             {
+                if (ShouldIgnore(fromInfo)) { continue; }
                 string toName = this.GetMappedPropertyName(fromInfo);
                 var toInfo = to.GetType().GetProperty(toName);
                 if (toInfo == null) { continue; }
+                if (ShouldIgnore(toInfo)) { continue; }
 
                 var fromObj = fromInfo.GetValue(from);
                 if (fromObj == null)
@@ -68,6 +70,10 @@ namespace ModelMapping
         private string GetMappedPropertyName(PropertyInfo propInfo)
         {
             return propInfo.GetCustomAttribute<MappingAttribute>()?.GetPropertyName() ?? propInfo.Name;
+        }
+        private bool ShouldIgnore(PropertyInfo propInfo)
+        {
+            return propInfo.GetCustomAttribute<MappingAttribute>()?.ShouldIgnore() ?? false;
         }
 
         private object TryInitializeInstance(PropertyInfo toPropertyInfo)

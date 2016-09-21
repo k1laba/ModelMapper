@@ -36,6 +36,7 @@ namespace ModelMapper.Tests
             //arrange
             var entity = GetEntity();
             var expected = GetViewModel();
+            expected.Role.Name = null;
             //act
             var actual = _mapper.MapToViewModel(entity);
             //assert
@@ -49,7 +50,10 @@ namespace ModelMapper.Tests
                 Id = 1,
                 Name = "beqa",
                 Date = new DateTime(1970, 1, 1),
-                Role = new Role() { Id = 2, Name = "role 1" }
+                Role = new Role()
+                {
+                    Id = 2
+                }
             };
             user.Role.Permissions = new List<Permission>()
             {

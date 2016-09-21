@@ -10,6 +10,7 @@ namespace ModelMapper.Tests.Models
     class RoleVM
     {
         public int Id { get; set; }
+        [Mapping(ignore: true)]
         public string Name { get; set; }
         [Mapping("Permissions")]
         public List<PermissionVM> Perms { get; set; }
