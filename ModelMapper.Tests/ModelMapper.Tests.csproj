@@ -69,8 +69,10 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Entities\Permission.cs" />
     <Compile Include="ModelMapperTests.cs" />
     <Compile Include="Entities\Role.cs" />
+    <Compile Include="ViewModels\PermissionVM.cs" />
     <Compile Include="ViewModels\RoleVM.cs" />
     <Compile Include="Entities\SimpleUser.cs" />
     <Compile Include="ViewModels\SimpleUserVM.cs" />

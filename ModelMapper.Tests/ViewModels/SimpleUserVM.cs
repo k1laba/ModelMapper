@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ModelMapper.Tests.Models
 {
-    class SimpleUserVM : IMappable
+    class SimpleUserVM
     {
-        public DateTime Date { get; internal set; }
         public int Id { get; set; }
         public string Name { get; set; }
+        public DateTime Date { get; set; }
     }
 }

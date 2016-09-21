@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelMapper
+namespace ModelMapper.Tests.Entities
 {
-    public interface IMappable
+    class Permission
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ModelMapper.Tests.Models
 {
-    class SimpleUser : IMappable
+    class SimpleUser
     {
-        public DateTime Date { get; internal set; }
+        public DateTime Date { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
     }

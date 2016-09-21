@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModelMapper.Tests.Models
 {
-    class User : SimpleUser, IMappable
+    class User : SimpleUser
     {
         public Role Role { get; set; }
     }

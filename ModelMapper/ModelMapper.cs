@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ModelMapping
 {
     public class ModelMapper<TEntity, TViewModel> : IModelMapper<TEntity, TViewModel>
-        where TEntity : IMappable, new()
-        where TViewModel : IMappable, new()
+        where TEntity : new()
+        where TViewModel : new()
     {
         public virtual TViewModel MapToViewModel(TEntity entity)
         {
@@ -28,34 +29,76 @@ namespace ModelMapping
         private void Map(object from, object to)
         {
             if (from == null) { return; }
-            foreach (var toPropertyInfo in to.GetType().GetProperties())
+            if (IsList(from))
             {
-                if (from.GetType().GetProperty(toPropertyInfo.Name) == null) { continue; }
-                var fromSubObject = from.GetType().GetProperty(toPropertyInfo.Name).GetValue(from);
+                HandleList(from, to);
+                return;
+            }
+            foreach (var fromInfo in from.GetType().GetProperties())
+            {
+                string toName = this.GetMappedPropertyName(fromInfo);
+                var toInfo = to.GetType().GetProperty(toName);
+                if (toInfo == null) { continue; }
 
-                if (fromSubObject is IMappable || (fromSubObject.GetType().IsClass 
-                                                    && !fromSubObject.GetType().IsValueType
-                                                    && !fromSubObject.GetType().IsPrimitive))
+                var fromObj = fromInfo.GetValue(from);
+                if (fromObj == null)
                 {
-                    object toSubObject = null;
-                    try
+                    toInfo.SetValue(to, null);
+                    continue;
+                }
+
+                if (NotPrimitive(fromObj))
+                {
+                    object toObj = TryInitializeInstance(toInfo);
+                    if (toObj != null)
                     {
-                        toSubObject = Activator.CreateInstance(toPropertyInfo.PropertyType);
-                    }
-                    catch (Exception) { }
-                    if (toSubObject != null)
-                    {
-                        to.GetType().GetProperty(toPropertyInfo.Name).SetValue(to, toSubObject);
-                        this.Map(fromSubObject, toSubObject);
+                        to.GetType().GetProperty(toName).SetValue(to, toObj);
+                        this.Map(fromObj, toObj);
                         continue;
                     }
                 }
 
-                Type t = Nullable.GetUnderlyingType(toPropertyInfo.PropertyType) ?? toPropertyInfo.PropertyType;
-                object safeValue = (fromSubObject == null) ? null : Convert.ChangeType(fromSubObject, t);
+                Type t = Nullable.GetUnderlyingType(toInfo.PropertyType) ?? toInfo.PropertyType;
+                object safeValue = (fromObj == null) ? null : Convert.ChangeType(fromObj, t);
 
-                toPropertyInfo.SetValue(to, safeValue, null);
+                toInfo.SetValue(to, safeValue);
             }
+        }
+
+        private string GetMappedPropertyName(PropertyInfo propInfo)
+        {
+            return propInfo.GetCustomAttribute<MappingAttribute>()?.GetPropertyName() ?? propInfo.Name;
+        }
+
+        private object TryInitializeInstance(PropertyInfo toPropertyInfo)
+        {
+            try
+            {
+                return Activator.CreateInstance(toPropertyInfo.PropertyType);
+            }
+            catch (Exception) { return null; }
+        }
+
+        private bool NotPrimitive(object fromSubObject)
+        {
+            return (fromSubObject.GetType().IsClass && !fromSubObject.GetType().IsValueType
+                                                    && !fromSubObject.GetType().IsPrimitive);
+        }
+
+        private void HandleList(object from, object to)
+        {
+            foreach (var fromItem in (System.Collections.IList)from)
+            {
+                var toType = to.GetType().GetGenericArguments()[0];
+                var toItem = Activator.CreateInstance(toType);
+                ((System.Collections.IList)to).Add(toItem);
+                this.Map(fromItem, toItem);
+            }
+        }
+
+        private bool IsList(object from)
+        {
+            return from is System.Collections.IList;
         }
     }
 }

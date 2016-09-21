@@ -1,5 +1,9 @@
-﻿using ModelMapper.Tests.Models;
+﻿using ModelMapper.Tests.Entities;
+using ModelMapper.Tests.Models;
+using ModelMapper.Tests.ViewModels;
 using ModelMapping;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,20 +23,8 @@ namespace ModelMapper.Tests
         public void MapToEntity_WhenCallsForComplexModel_ShouldMapCorrectly()
         {
             //arrange
-            var viewModel = new UserVM()
-            {
-                Id = 1,
-                Name = "beqa",
-                Date = new DateTime(1970, 1, 1),
-                Role = new RoleVM() { Id = 2, Name = "role 1" }
-            };
-            var expected = new User()
-            {
-                Id = 1,
-                Name = "beqa",
-                Date = new DateTime(1970, 1, 1),
-                Role = new Role() { Id = 2, Name = "role 1" }
-            };
+            var viewModel = GetViewModel();
+            var expected = GetEntity();
             //act
             var actual = _mapper.MapToEntity(viewModel);
             //assert
@@ -42,24 +34,50 @@ namespace ModelMapper.Tests
         public void MapToViewModel_WhenCallsForComplexModel_ShouldMapCorrectly()
         {
             //arrange
-            var entity = new User()
+            var entity = GetEntity();
+            var expected = GetViewModel();
+            //act
+            var actual = _mapper.MapToViewModel(entity);
+            //assert
+            Assert.Equal(expected.ToJson(), actual.ToJson());
+        }
+
+        private User GetEntity()
+        {
+            var user = new User()
             {
                 Id = 1,
                 Name = "beqa",
                 Date = new DateTime(1970, 1, 1),
                 Role = new Role() { Id = 2, Name = "role 1" }
             };
-            var expected = new UserVM()
+            user.Role.Permissions = new List<Permission>()
+            {
+                new Permission() { Id = 1, Name = "Permission 1" },
+                new Permission() { Id = 2, Name = "Permission 2" },
+            };
+            return user;
+        }
+        private UserVM GetViewModel()
+        {
+            var user = new UserVM()
             {
                 Id = 1,
                 Name = "beqa",
                 Date = new DateTime(1970, 1, 1),
                 Role = new RoleVM() { Id = 2, Name = "role 1" }
             };
-            //act
-            var actual = _mapper.MapToViewModel(entity);
-            //assert
-            Assert.Equal(expected.ToJson(), actual.ToJson());
+            user.Role = new RoleVM()
+            {
+                Id = 2,
+                Name = "role 1"
+            };
+            user.Role.Perms = new List<PermissionVM>()
+            {
+                new PermissionVM() { Id = 1, Name = "Permission 1" },
+                new PermissionVM() { Id = 2, Name = "Permission 2" },
+            };
+            return user;
         }
     }
 }

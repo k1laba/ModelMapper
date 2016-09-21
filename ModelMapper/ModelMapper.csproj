@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMappable.cs" />
     <Compile Include="IModelMapper.cs" />
+    <Compile Include="MappingAttribute.cs" />
     <Compile Include="ModelMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
