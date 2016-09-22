@@ -1,4 +1,5 @@
 ﻿using ModelMapper.Tests.Entities;
+using ModelMapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
