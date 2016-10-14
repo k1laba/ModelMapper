@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -50,7 +51,7 @@ namespace ModelMapping
 
                 if (NotPrimitive(fromObj))
                 {
-                    object toObj = TryInitializeInstance(toInfo);
+                    object toObj = TryInitializeInstance(toInfo.PropertyType);
                     if (toObj != null)
                     {
                         toInfo.SetValue(to, toObj);
@@ -75,13 +76,14 @@ namespace ModelMapping
             return propInfo.GetCustomAttribute<MappingAttribute>()?.ShouldIgnore() ?? false;
         }
 
-        private object TryInitializeInstance(PropertyInfo toPropertyInfo)
+        private object TryInitializeInstance(Type fromType)
         {
             try
             {
-                return Activator.CreateInstance(toPropertyInfo.PropertyType);
+                return Activator.CreateInstance(fromType);
             }
             catch (Exception) { return null; }
+            
         }
 
         private bool NotPrimitive(object fromSubObject)
@@ -92,18 +94,23 @@ namespace ModelMapping
 
         private void HandleList(object from, object to)
         {
-            foreach (var fromItem in (System.Collections.IList)from)
+            foreach (var fromItem in (IList)from)
             {
                 var toType = to.GetType().GetGenericArguments()[0];
-                var toItem = Activator.CreateInstance(toType);
-                ((System.Collections.IList)to).Add(toItem);
+                object toItem = TryInitializeInstance(toType);
+                bool isPrimitive = toItem == null;
+                if (isPrimitive) { toItem = fromItem; }
+                if (to is IList)
+                {
+                    ((IList)to).Add(toItem);
+                }
+                if (isPrimitive) { continue; }
                 this.Map(fromItem, toItem);
             }
         }
-
         private bool IsList(object from)
         {
-            return from is System.Collections.IList;
+            return from is IList;
         }
     }
 }

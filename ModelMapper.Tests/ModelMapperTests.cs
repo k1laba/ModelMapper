@@ -42,6 +42,17 @@ namespace ModelMapper.Tests
             //assert
             Assert.Equal(expected.ToJson(), actual.ToJson());
         }
+        [Fact]
+        public void Map_WhenCallsForHashSet_ShouldMapCorrectly()
+        {
+            //arrange
+            HashSet<string> viewModel = new HashSet<string>() { "1", "2" };
+            var mapper = new ModelMapper<HashSet<string>, HashSet<string>>();
+            //act
+            var result = mapper.MapToEntity(viewModel);
+            //assert
+            Assert.Equal(viewModel.ToJson(), result.ToJson());
+        }
 
         private User GetEntity()
         {
@@ -53,7 +64,8 @@ namespace ModelMapper.Tests
                 Role = new Role()
                 {
                     Id = 2
-                }
+                },
+                Cities = new List<string>() { "Tbilisi" }
             };
             user.Role.Permissions = new List<Permission>()
             {
@@ -81,6 +93,7 @@ namespace ModelMapper.Tests
                 new PermissionVM() { Id = 1, Name = "Permission 1" },
                 new PermissionVM() { Id = 2, Name = "Permission 2" },
             };
+            user.Cities = new List<string>() { "Tbilisi" };
             return user;
         }
     }
