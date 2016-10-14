@@ -86,10 +86,10 @@ namespace ModelMapping
             
         }
 
-        private bool NotPrimitive(object fromSubObject)
+        private bool NotPrimitive(object fromObject)
         {
-            return (fromSubObject.GetType().IsClass && !fromSubObject.GetType().IsValueType
-                                                    && !fromSubObject.GetType().IsPrimitive);
+            return (fromObject.GetType().IsClass && !fromObject.GetType().IsValueType
+                                                    && !fromObject.GetType().IsPrimitive);
         }
 
         private void HandleList(object from, object to)
@@ -98,7 +98,7 @@ namespace ModelMapping
             {
                 var toType = to.GetType().GetGenericArguments()[0];
                 object toItem = TryInitializeInstance(toType);
-                bool isPrimitive = toItem == null;
+                bool isPrimitive = toItem == null || !NotPrimitive(fromItem);
                 if (isPrimitive) { toItem = fromItem; }
                 if (to is IList)
                 {

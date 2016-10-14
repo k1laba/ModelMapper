@@ -65,7 +65,8 @@ namespace ModelMapper.Tests
                 {
                     Id = 2
                 },
-                Cities = new List<string>() { "Tbilisi" }
+                ProductIds = new List<int>() { 1 },
+                Citites = new List<string>() { "Tbilisi" }
             };
             user.Role.Permissions = new List<Permission>()
             {
@@ -93,7 +94,8 @@ namespace ModelMapper.Tests
                 new PermissionVM() { Id = 1, Name = "Permission 1" },
                 new PermissionVM() { Id = 2, Name = "Permission 2" },
             };
-            user.Cities = new List<string>() { "Tbilisi" };
+            user.ProductIds = new List<int>() { 1 };
+            user.Citites = new List<string>() { "Tbilisi" };
             return user;
         }
     }
