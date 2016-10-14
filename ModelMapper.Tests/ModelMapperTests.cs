@@ -53,7 +53,6 @@ namespace ModelMapper.Tests
             //assert
             Assert.Equal(viewModel.ToJson(), result.ToJson());
         }
-
         private User GetEntity()
         {
             var user = new User()

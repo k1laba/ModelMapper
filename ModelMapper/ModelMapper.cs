@@ -29,9 +29,9 @@ namespace ModelMapping
         private void Map(object from, object to)
         {
             if (from == null) { return; }
-            if (IsList(from))
+            if (IsCollection(from))
             {
-                HandleList(from, to);
+                HandleCollection(from, to);
                 return;
             }
             foreach (var fromInfo in from.GetType().GetProperties())
@@ -92,25 +92,27 @@ namespace ModelMapping
                                                     && !fromObject.GetType().IsPrimitive);
         }
 
-        private void HandleList(object from, object to)
+        private void HandleCollection(object from, object to)
         {
-            foreach (var fromItem in (IList)from)
+            foreach (var fromItem in (IEnumerable)from)
             {
                 var toType = to.GetType().GetGenericArguments()[0];
                 object toItem = TryInitializeInstance(toType);
                 bool isPrimitive = toItem == null || !NotPrimitive(fromItem);
                 if (isPrimitive) { toItem = fromItem; }
-                if (to is IList)
-                {
-                    ((IList)to).Add(toItem);
-                }
+
+                var addMethod = to.GetType().GetMethod("Add");
+                addMethod.Invoke(to, new object[] { toItem });
                 if (isPrimitive) { continue; }
                 this.Map(fromItem, toItem);
             }
         }
-        private bool IsList(object from)
+        private bool IsCollection(object from)
         {
-            return from is IList;
+            return from.GetType()
+                       .GetInterfaces()
+                       .Any(i => i.IsGenericType && 
+                                 i.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
     }
 }
