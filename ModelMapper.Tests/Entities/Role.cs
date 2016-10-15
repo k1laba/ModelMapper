@@ -1,5 +1,6 @@
 ﻿using ModelMapper.Tests.Entities;
 using ModelMapping;
+using ModelMapping.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace ModelMapper.Tests.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        [Mapping("Perms")]
+        [MapTo("Perms")]
         public List<Permission> Permissions { get; set; }
     }
 }

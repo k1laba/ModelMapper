@@ -23,8 +23,8 @@ namespace ModelMapper.Tests
         public void MapToEntity_WhenCallsForComplexModel_ShouldMapCorrectly()
         {
             //arrange
-            var viewModel = GetViewModel();
-            var expected = GetEntity();
+            var viewModel = InMemoryRepository.GetUserViewModel();
+            var expected = InMemoryRepository.GetUser();
             //act
             var actual = _mapper.MapToEntity(viewModel);
             //assert
@@ -34,8 +34,8 @@ namespace ModelMapper.Tests
         public void MapToViewModel_WhenCallsForComplexModel_ShouldMapCorrectly()
         {
             //arrange
-            var entity = GetEntity();
-            var expected = GetViewModel();
+            var entity = InMemoryRepository.GetUser();
+            var expected = InMemoryRepository.GetUserViewModel();
             expected.Role.Name = null;
             //act
             var actual = _mapper.MapToViewModel(entity);
@@ -53,49 +53,21 @@ namespace ModelMapper.Tests
             //assert
             Assert.Equal(viewModel.ToJson(), result.ToJson());
         }
-        private User GetEntity()
+        [Fact]
+        public void Map_WhenCallsForICollectionWithCorrectBinding_ShouldMapCorrectly()
         {
-            var user = new User()
+            //arrange
+            var expected = InMemoryRepository.GetOrder();
+            var viewModel = InMemoryRepository.GetOrderVM();
+            var bindingOptions = new Dictionary<Type, Type>()
             {
-                Id = 1,
-                Name = "beqa",
-                Date = new DateTime(1970, 1, 1),
-                Role = new Role()
-                {
-                    Id = 2
-                },
-                ProductIds = new List<int>() { 1 },
-                Citites = new List<string>() { "Tbilisi" }
+                { typeof(ICollection<int>), typeof(List<int>) }
             };
-            user.Role.Permissions = new List<Permission>()
-            {
-                new Permission() { Id = 1, Name = "Permission 1" },
-                new Permission() { Id = 2, Name = "Permission 2" },
-            };
-            return user;
-        }
-        private UserVM GetViewModel()
-        {
-            var user = new UserVM()
-            {
-                Id = 1,
-                Name = "beqa",
-                Date = new DateTime(1970, 1, 1),
-                Role = new RoleVM() { Id = 2, Name = "role 1" }
-            };
-            user.Role = new RoleVM()
-            {
-                Id = 2,
-                Name = "role 1"
-            };
-            user.Role.Perms = new List<PermissionVM>()
-            {
-                new PermissionVM() { Id = 1, Name = "Permission 1" },
-                new PermissionVM() { Id = 2, Name = "Permission 2" },
-            };
-            user.ProductIds = new List<int>() { 1 };
-            user.Citites = new List<string>() { "Tbilisi" };
-            return user;
+            var mapper = new ModelMapper<Order, OrderVM>(bindingOptions);
+            //act
+            var actual = mapper.MapToEntity(viewModel);
+            //assert
+            Assert.Equal(expected.ToJson(), actual.ToJson());
         }
     }
 }

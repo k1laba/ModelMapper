@@ -1,5 +1,6 @@
 ﻿using ModelMapper.Tests.ViewModels;
 using ModelMapping;
+using ModelMapping.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace ModelMapper.Tests.Models
     class RoleVM
     {
         public int Id { get; set; }
-        [Mapping(ignore: true)]
+        [MapIgnoreAttribute]
         public string Name { get; set; }
-        [Mapping("Permissions")]
+        [MapTo("Permissions")]
         public List<PermissionVM> Perms { get; set; }
     }
 }

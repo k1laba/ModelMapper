@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelMapping.Attributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,13 @@ namespace ModelMapping
         where TEntity : new()
         where TViewModel : new()
     {
+        private Dictionary<Type, Type> _bindingOptions;
+
+        public ModelMapper() : this(new Dictionary<Type, Type>()) { }
+        public ModelMapper(Dictionary<Type, Type> bindingOptions)
+        {
+            this._bindingOptions = bindingOptions ?? new Dictionary<Type, Type>();
+        }
         public virtual TViewModel MapToViewModel(TEntity entity)
         {
             if (entity == null) { return new TViewModel(); }
@@ -69,18 +77,20 @@ namespace ModelMapping
 
         private string GetMappedPropertyName(PropertyInfo propInfo)
         {
-            return propInfo.GetCustomAttribute<MappingAttribute>()?.GetPropertyName() ?? propInfo.Name;
+            return propInfo.GetCustomAttribute<MapToAttribute>()?.GetPropertyName() ?? propInfo.Name;
         }
         private bool ShouldIgnore(PropertyInfo propInfo)
         {
-            return propInfo.GetCustomAttribute<MappingAttribute>()?.ShouldIgnore() ?? false;
+            return propInfo.GetCustomAttribute<MapIgnoreAttribute>() != null;
         }
 
         private object TryInitializeInstance(Type fromType)
         {
             try
             {
-                return Activator.CreateInstance(fromType);
+                Type toType = this._bindingOptions.ContainsKey(fromType) ? this._bindingOptions[fromType] 
+                                                                         : fromType;
+                return Activator.CreateInstance(toType);
             }
             catch (Exception) { return null; }
             
