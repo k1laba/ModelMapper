@@ -13,5 +13,11 @@ namespace ModelMapper.Tests.Models
         public DateTime Date { get; set; }
         public List<int> ProductIds { get; set; }
         public List<string> Citites { get; set; }
+        public Status Status { get; set; }
+    }
+    public enum Status
+    {
+        Active = 0,
+        Disabled = 1
     }
 }

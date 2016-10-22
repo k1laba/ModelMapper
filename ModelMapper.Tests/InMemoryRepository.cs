@@ -23,7 +23,8 @@ namespace ModelMapper.Tests
                     Id = 2
                 },
                 ProductIds = new List<int>() { 1 },
-                Citites = new List<string>() { "Tbilisi" }
+                Citites = new List<string>() { "Tbilisi" },
+                Status = Status.Disabled
             };
             user.Role.Permissions = new List<Permission>()
             {
@@ -39,7 +40,8 @@ namespace ModelMapper.Tests
                 Id = 1,
                 Name = "beqa",
                 Date = new DateTime(1970, 1, 1),
-                Role = new RoleVM() { Id = 2, Name = "role 1" }
+                Role = new RoleVM() { Id = 2, Name = "role 1" },
+                Status = Status.Disabled
             };
             user.Role = new RoleVM()
             {

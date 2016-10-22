@@ -13,5 +13,6 @@ namespace ModelMapper.Tests.Models
         public string Name { get; set; }
         public List<int> ProductIds { get; set; }
         public List<string> Citites { get; set; }
+        public Status Status { get; set; }
     }
 }
