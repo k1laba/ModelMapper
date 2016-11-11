@@ -36,7 +36,12 @@ namespace ModelMapping
         }
         public virtual void Bind<TFrom, TTo>()
         {
-            this._bindingOptions.Add(typeof(TFrom), typeof(TTo));
+            var key = typeof(TFrom);
+            if (this._bindingOptions.ContainsKey(key))
+            {
+                throw new Exception($"type: {key} already added in bindingOptions");
+            }
+            this._bindingOptions.Add(key, typeof(TTo));
         }
         private void Map(object from, object to)
         {
@@ -92,12 +97,12 @@ namespace ModelMapping
         {
             try
             {
-                Type toType = this._bindingOptions.ContainsKey(fromType) ? this._bindingOptions[fromType] 
+                Type toType = this._bindingOptions.ContainsKey(fromType) ? this._bindingOptions[fromType]
                                                                          : fromType;
                 return Activator.CreateInstance(toType);
             }
             catch (Exception) { return null; }
-            
+
         }
 
         private bool NotPrimitive(object fromObject)
@@ -125,7 +130,7 @@ namespace ModelMapping
         {
             return from.GetType()
                        .GetInterfaces()
-                       .Any(i => i.IsGenericType && 
+                       .Any(i => i.IsGenericType &&
                                  i.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
     }
