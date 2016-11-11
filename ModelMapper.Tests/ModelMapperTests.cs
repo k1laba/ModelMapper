@@ -69,5 +69,18 @@ namespace ModelMapper.Tests
             //assert
             Assert.Equal(expected.ToJson(), actual.ToJson());
         }
+        [Fact]
+        public void Map_WhenCallsWithAddedBindingParameters_ShouldMapCorrectly()
+        {
+            //arrange
+            var expected = InMemoryRepository.GetOrder();
+            var viewModel = InMemoryRepository.GetOrderVM();
+            var mapper = new ModelMapper<Order, OrderVM>();
+            mapper.Bind<ICollection<int>, List<int>>();
+            //act
+            var actual = mapper.MapToEntity(viewModel);
+            //assert
+            Assert.Equal(expected.ToJson(), actual.ToJson());
+        }
     }
 }

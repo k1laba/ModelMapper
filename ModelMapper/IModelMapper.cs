@@ -12,5 +12,6 @@ namespace ModelMapping
     {
         TViewModel MapToViewModel(TEntity entity);
         TEntity MapToEntity(TViewModel viewModel);
+        void Bind<TFrom, TTo>();
     }
 }

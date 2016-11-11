@@ -34,6 +34,10 @@ namespace ModelMapping
             this.Map(viewModel, result);
             return result;
         }
+        public virtual void Bind<TFrom, TTo>()
+        {
+            this._bindingOptions.Add(typeof(TFrom), typeof(TTo));
+        }
         private void Map(object from, object to)
         {
             if (from == null) { return; }
