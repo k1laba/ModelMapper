@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelMapper.Tests.Entities
+namespace Modelmapping.Tests.Entities
 {
     class Permission
     {

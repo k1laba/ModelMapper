@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelMapper.Tests.ViewModels
+namespace Modelmapping.Tests.ViewModels
 {
     class OrderVM
     {

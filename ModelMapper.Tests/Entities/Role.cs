@@ -1,4 +1,4 @@
-﻿using ModelMapper.Tests.Entities;
+﻿using Modelmapping.Tests.Entities;
 using ModelMapping;
 using ModelMapping.Attributes;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelMapper.Tests.Models
+namespace Modelmapping.Tests.Models
 {
     class Role
     {

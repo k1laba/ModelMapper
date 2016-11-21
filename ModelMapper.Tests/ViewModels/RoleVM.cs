@@ -1,4 +1,4 @@
-﻿using ModelMapper.Tests.ViewModels;
+﻿using Modelmapping.Tests.ViewModels;
 using ModelMapping;
 using ModelMapping.Attributes;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelMapper.Tests.Models
+namespace Modelmapping.Tests.Models
 {
     class RoleVM
     {

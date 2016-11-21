@@ -1,13 +1,13 @@
-﻿using ModelMapper.Tests.Entities;
-using ModelMapper.Tests.Models;
-using ModelMapper.Tests.ViewModels;
+﻿using Modelmapping.Tests.Entities;
+using Modelmapping.Tests.Models;
+using Modelmapping.Tests.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelMapper.Tests
+namespace Modelmapping.Tests
 {
     class InMemoryRepository
     {

@@ -9,9 +9,7 @@ using System.Threading.Tasks;
 
 namespace ModelMapping
 {
-    public class ModelMapper<TEntity, TViewModel> : IModelMapper<TEntity, TViewModel>
-        where TEntity : new()
-        where TViewModel : new()
+    public class ModelMapper : IModelMapper
     {
         private Dictionary<Type, Type> _bindingOptions;
 
@@ -20,18 +18,11 @@ namespace ModelMapping
         {
             this._bindingOptions = bindingOptions ?? new Dictionary<Type, Type>();
         }
-        public virtual TViewModel MapToViewModel(TEntity entity)
+        public virtual TDestination Map<TSource, TDestination>(TSource source) where TDestination : new() where TSource : new()
         {
-            if (entity == null) { return new TViewModel(); }
-            var result = new TViewModel();
-            this.Map(entity, result);
-            return result;
-        }
-        public virtual TEntity MapToEntity(TViewModel viewModel)
-        {
-            if (viewModel == null) { return new TEntity(); }
-            var result = new TEntity();
-            this.Map(viewModel, result);
+            var result = new TDestination();
+            if (source == null) { return result; }
+            this.Map(source, result);
             return result;
         }
         public virtual void Bind<TFrom, TTo>()
@@ -43,44 +34,44 @@ namespace ModelMapping
             }
             this._bindingOptions.Add(key, typeof(TTo));
         }
-        private void Map(object from, object to)
+        private void Map(object source, object destination)
         {
-            if (from == null) { return; }
-            if (IsCollection(from))
+            if (source == null) { return; }
+            if (IsCollection(source))
             {
-                HandleCollection(from, to);
+                HandleCollection(source, destination);
                 return;
             }
-            foreach (var fromInfo in from.GetType().GetProperties())
+            foreach (var sourceInfo in source.GetType().GetProperties())
             {
-                if (ShouldIgnore(fromInfo)) { continue; }
-                string toName = this.GetMappedPropertyName(fromInfo);
-                var toInfo = to.GetType().GetProperty(toName);
-                if (toInfo == null) { continue; }
-                if (ShouldIgnore(toInfo)) { continue; }
+                if (ShouldIgnore(sourceInfo)) { continue; }
+                string destName = this.GetMappedPropertyName(sourceInfo);
+                var destInfo = destination.GetType().GetProperty(destName);
+                if (destInfo == null) { continue; }
+                if (ShouldIgnore(destInfo)) { continue; }
 
-                var fromObj = fromInfo.GetValue(from);
-                if (fromObj == null)
+                var sourceObj = sourceInfo.GetValue(source);
+                if (sourceObj == null)
                 {
-                    toInfo.SetValue(to, null);
+                    destInfo.SetValue(destination, null);
                     continue;
                 }
 
-                if (NotPrimitive(fromObj))
+                if (NotPrimitive(sourceObj))
                 {
-                    object toObj = TryInitializeInstance(toInfo.PropertyType);
+                    object toObj = TryInitializeInstance(destInfo.PropertyType);
                     if (toObj != null)
                     {
-                        toInfo.SetValue(to, toObj);
-                        this.Map(fromObj, toObj);
+                        destInfo.SetValue(destination, toObj);
+                        this.Map(sourceObj, toObj);
                         continue;
                     }
                 }
 
-                Type t = Nullable.GetUnderlyingType(toInfo.PropertyType) ?? toInfo.PropertyType;
-                object safeValue = (fromObj == null) ? null : Convert.ChangeType(fromObj, t);
+                Type t = Nullable.GetUnderlyingType(destInfo.PropertyType) ?? destInfo.PropertyType;
+                object safeValue = (sourceObj == null) ? null : Convert.ChangeType(sourceObj, t);
 
-                toInfo.SetValue(to, safeValue);
+                destInfo.SetValue(destination, safeValue);
             }
         }
 
@@ -93,42 +84,42 @@ namespace ModelMapping
             return propInfo.GetCustomAttribute<MapIgnoreAttribute>() != null;
         }
 
-        private object TryInitializeInstance(Type fromType)
+        private object TryInitializeInstance(Type sourceType)
         {
             try
             {
-                Type toType = this._bindingOptions.ContainsKey(fromType) ? this._bindingOptions[fromType]
-                                                                         : fromType;
+                Type toType = this._bindingOptions.ContainsKey(sourceType) ? this._bindingOptions[sourceType]
+                                                                         : sourceType;
                 return Activator.CreateInstance(toType);
             }
             catch (Exception) { return null; }
 
         }
 
-        private bool NotPrimitive(object fromObject)
+        private bool NotPrimitive(object sourceObject)
         {
-            return (fromObject.GetType().IsClass && !fromObject.GetType().IsValueType
-                                                    && !fromObject.GetType().IsPrimitive);
+            return (sourceObject.GetType().IsClass && !sourceObject.GetType().IsValueType
+                                                    && !sourceObject.GetType().IsPrimitive);
         }
 
-        private void HandleCollection(object from, object to)
+        private void HandleCollection(object source, object destination)
         {
-            foreach (var fromItem in (IEnumerable)from)
+            foreach (var sourceItem in (IEnumerable)source)
             {
-                var toType = to.GetType().GetGenericArguments()[0];
-                object toItem = TryInitializeInstance(toType);
-                bool isPrimitive = toItem == null || !NotPrimitive(fromItem);
-                if (isPrimitive) { toItem = fromItem; }
+                var destType = destination.GetType().GetGenericArguments()[0];
+                object destItem = TryInitializeInstance(destType);
+                bool isPrimitive = destItem == null || !NotPrimitive(sourceItem);
+                if (isPrimitive) { destItem = sourceItem; }
 
-                var addMethod = to.GetType().GetMethod("Add");
-                addMethod.Invoke(to, new object[] { toItem });
+                var addMethod = destination.GetType().GetMethod("Add");
+                addMethod.Invoke(destination, new object[] { destItem });
                 if (isPrimitive) { continue; }
-                this.Map(fromItem, toItem);
+                this.Map(sourceItem, destItem);
             }
         }
-        private bool IsCollection(object from)
+        private bool IsCollection(object source)
         {
-            return from.GetType()
+            return source.GetType()
                        .GetInterfaces()
                        .Any(i => i.IsGenericType &&
                                  i.GetGenericTypeDefinition() == typeof(ICollection<>));

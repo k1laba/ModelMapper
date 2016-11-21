@@ -1,6 +1,6 @@
-﻿using ModelMapper.Tests.Entities;
-using ModelMapper.Tests.Models;
-using ModelMapper.Tests.ViewModels;
+﻿using Modelmapping.Tests.Entities;
+using Modelmapping.Tests.Models;
+using Modelmapping.Tests.ViewModels;
 using ModelMapping;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -10,35 +10,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-namespace ModelMapper.Tests
+namespace Modelmapping.Tests
 {
     public class ModelMapperTests
     {
-        private IModelMapper<User, UserVM> _mapper;
+        private IModelMapper _mapper;
         public ModelMapperTests()
         {
-            _mapper = new ModelMapper<User, UserVM>();
+            _mapper = new ModelMapper();
         }
         [Fact]
-        public void MapToEntity_WhenCallsForComplexModel_ShouldMapCorrectly()
+        public void Map_WhenCallsForComplexModel_ShouldMapCorrectly()
         {
             //arrange
-            var viewModel = InMemoryRepository.GetUserViewModel();
+            var source = InMemoryRepository.GetUserViewModel();
             var expected = InMemoryRepository.GetUser();
             //act
-            var actual = _mapper.MapToEntity(viewModel);
-            //assert
-            Assert.Equal(expected.ToJson(), actual.ToJson());
-        }
-        [Fact]
-        public void MapToViewModel_WhenCallsForComplexModel_ShouldMapCorrectly()
-        {
-            //arrange
-            var entity = InMemoryRepository.GetUser();
-            var expected = InMemoryRepository.GetUserViewModel();
-            expected.Role.Name = null;
-            //act
-            var actual = _mapper.MapToViewModel(entity);
+            var actual = _mapper.Map<UserVM, User>(source);
             //assert
             Assert.Equal(expected.ToJson(), actual.ToJson());
         }
@@ -46,26 +34,25 @@ namespace ModelMapper.Tests
         public void Map_WhenCallsForHashSet_ShouldMapCorrectly()
         {
             //arrange
-            HashSet<string> viewModel = new HashSet<string>() { "1", "2" };
-            var mapper = new ModelMapper<HashSet<string>, HashSet<string>>();
+            HashSet<string> source = new HashSet<string>() { "1", "2" };
             //act
-            var result = mapper.MapToEntity(viewModel);
+            var result = _mapper.Map<HashSet<string>, HashSet<string>>(source);
             //assert
-            Assert.Equal(viewModel.ToJson(), result.ToJson());
+            Assert.Equal(source.ToJson(), result.ToJson());
         }
         [Fact]
         public void Map_WhenCallsForICollectionWithCorrectBinding_ShouldMapCorrectly()
         {
             //arrange
             var expected = InMemoryRepository.GetOrder();
-            var viewModel = InMemoryRepository.GetOrderVM();
+            var source = InMemoryRepository.GetOrderVM();
             var bindingOptions = new Dictionary<Type, Type>()
             {
                 { typeof(ICollection<int>), typeof(List<int>) }
             };
-            var mapper = new ModelMapper<Order, OrderVM>(bindingOptions);
+            var mapper = new ModelMapper(bindingOptions);
             //act
-            var actual = mapper.MapToEntity(viewModel);
+            var actual = mapper.Map<OrderVM, Order>(source);
             //assert
             Assert.Equal(expected.ToJson(), actual.ToJson());
         }
@@ -74,11 +61,10 @@ namespace ModelMapper.Tests
         {
             //arrange
             var expected = InMemoryRepository.GetOrder();
-            var viewModel = InMemoryRepository.GetOrderVM();
-            var mapper = new ModelMapper<Order, OrderVM>();
-            mapper.Bind<ICollection<int>, List<int>>();
+            var source = InMemoryRepository.GetOrderVM();
+            _mapper.Bind<ICollection<int>, List<int>>();
             //act
-            var actual = mapper.MapToEntity(viewModel);
+            var actual = _mapper.Map<OrderVM, Order>(source);
             //assert
             Assert.Equal(expected.ToJson(), actual.ToJson());
         }

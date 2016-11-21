@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace ModelMapping
 {
-    public interface IModelMapper<TEntity, TViewModel>
-        where TEntity : new()
-        where TViewModel : new()
+    public interface IModelMapper
     {
-        TViewModel MapToViewModel(TEntity entity);
-        TEntity MapToEntity(TViewModel viewModel);
+        TDestination Map<TSource, TDestination>(TSource source) where TDestination : new() where TSource : new();
         void Bind<TFrom, TTo>();
     }
 }
