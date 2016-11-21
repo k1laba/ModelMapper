@@ -21,7 +21,7 @@ You can install package from nuget: <code>Install-Package ModelMapping</code>
   }
   IModelMapper<User, UserVM> mapper = new ModelMapper<User, UserVM>();
   var user = new User() { Id = 1, Name = "beqa" };
-  UserVM viewmodel = mapper.MapToViewModel(user);
+  UserVM viewmodel = mapper.Map<User, UserVM>(user);
   // viewmodel.Id == 1
   // viewmodel.Name == "beqa"
 ```
