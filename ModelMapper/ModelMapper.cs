@@ -31,7 +31,7 @@ namespace ModelMapping
             var generic = mapMethod.MakeGenericMethod(source.GetType(), typeof(TResult));
             return (TResult)generic.Invoke(this, new object[] { source });
         }
-        public virtual void ClearBinding()
+        public virtual void ClearBindings()
         {
             this._bindingOptions = new Dictionary<Type, Type>();
         }
