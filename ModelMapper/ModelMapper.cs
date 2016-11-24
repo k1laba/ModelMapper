@@ -18,12 +18,22 @@ namespace ModelMapping
         {
             this._bindingOptions = bindingOptions ?? new Dictionary<Type, Type>();
         }
-        public virtual TDestination Map<TSource, TDestination>(TSource source) where TDestination : new() where TSource : new()
+        public virtual TResult Map<TSource, TResult>(TSource source) where TResult : new() where TSource : new()
         {
-            var result = new TDestination();
+            var result = new TResult();
             if (source == null) { return result; }
             this.Map(source, result);
             return result;
+        }
+        public virtual TResult Map<TResult>(object source) where TResult : new()
+        {
+            var mapMethod = this.GetType().GetMethods().Single(m => m.Name == "Map" && m.GetGenericArguments().Count() == 2);
+            var generic = mapMethod.MakeGenericMethod(source.GetType(), typeof(TResult));
+            return (TResult)generic.Invoke(this, new object[] { source });
+        }
+        public virtual void ClearBinding()
+        {
+            this._bindingOptions = new Dictionary<Type, Type>();
         }
         public virtual void Bind<TFrom, TTo>()
         {

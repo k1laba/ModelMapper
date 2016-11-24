@@ -68,5 +68,16 @@ namespace Modelmapping.Tests
             //assert
             Assert.Equal(expected.ToJson(), actual.ToJson());
         }
+        [Fact]
+        public void Map_WhenCallsWithSingleGenericArgument_ShouldMapCorreclty()
+        {
+            //arrange
+            var source = InMemoryRepository.GetUserViewModel();
+            var expected = InMemoryRepository.GetUser();
+            //act
+            var actual = _mapper.Map<User>(source);
+            //assert
+            Assert.Equal(expected.ToJson(), actual.ToJson());
+        }
     }
 }
