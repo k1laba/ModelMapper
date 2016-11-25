@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ModelMapping</id>
+    <version>1.1.1</version>
+    <title>ModelMapping</title>
+    <authors>K1laba</authors>
+    <owners>K1laba</owners>
+    <projectUrl>https://github.com/k1laba/ModelMapper</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Maps object to object using name convention</description>
+    <releaseNotes>Added ClearBindings methods</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Model Mapping</tags>
+  </metadata>
+</package>
